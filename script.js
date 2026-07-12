@@ -370,11 +370,8 @@
   const initCoreMotion = () => {
     if (!originCore) return;
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    const hintLabel = originHint?.querySelector('b');
-    if (hintLabel) hintLabel.textContent = coarsePointer ? 'TAP TO EXPLORE' : 'HOVER TO EXPLORE';
     if (!hasGSAP || reduceMotion) return;
     gsap.set(originCore, { xPercent: -50, yPercent: -50, scale: 1, transformOrigin: '50% 50%' });
-    gsap.set(originHint, { autoAlpha: 1, y: 0 });
     if (originOrbitTrack) {
       gsap.set(originOrbitTrack, { rotation: -42, transformOrigin: '50% 50%' });
       gsap.set(originOrbitIcons, { rotation: 42, transformOrigin: '50% 50%' });
@@ -383,8 +380,7 @@
     }
     coreBreath = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } })
       .to(originCore, { scale: 1.012, filter: isFlatV08 ? 'none' : 'saturate(1.035) brightness(1.018)', duration: 3.2 }, 0)
-      .to(originHalo, { scale: 1.12, autoAlpha: .34, duration: 3.2 }, 0)
-      .to(originHint, { y: -4, autoAlpha: .94, duration: 3.2 }, 0);
+      .to(originHalo, { scale: 1.12, autoAlpha: .34, duration: 3.2 }, 0);
   };
 
   const setOriginExpanded = (expanded) => {
@@ -409,8 +405,7 @@
       gsap.set(items, { visibility: 'visible' });
 
       timeline
-        .to(originCore, { scale: expandedScale, filter: isFlatV08 ? 'none' : 'saturate(1.02)', duration: .76, ease: 'power4.inOut' }, 0)
-        .to(originHint, { autoAlpha: 0, y: 8, duration: .22, ease: 'power2.out' }, 0);
+        .to(originCore, { scale: expandedScale, filter: isFlatV08 ? 'none' : 'saturate(1.02)', duration: .76, ease: 'power4.inOut' }, 0);
 
       items.forEach((item, index) => {
         const rect = item.getBoundingClientRect();
@@ -458,8 +453,7 @@
           duration: .76,
           ease: 'power4.out',
           onComplete: () => coreBreath?.restart()
-        }, .46)
-        .to(originHint, { autoAlpha: 1, y: 0, duration: .38, ease: 'power2.out' }, .72);
+        }, .46);
     }
   };
 
@@ -508,11 +502,15 @@
   const catalogListViewport = qs('[data-catalog-list-viewport]');
   const catalogRailDots = qsa('[data-rail-index]');
   const catalogRailCounter = qs('[data-catalog-rail-counter]');
+  const catalogSkip = qs('[data-catalog-skip]');
   let activeCatalogKey = 'brain2';
   let activeCatalogIndex = 0;
   let catalogTransition = null;
 
-  catalogItems.forEach((item, index) => item.dataset.seq = String(index + 1).padStart(2, '0'));
+  catalogItems.forEach((item, index) => {
+    item.dataset.seq = String(index + 1).padStart(2, '0');
+    item.disabled = true;
+  });
 
   const catalogData = {
     brain2: {
@@ -562,10 +560,9 @@
   const moveCatalogList = (index, { animate = true } = {}) => {
     if (!catalogList || !catalogListViewport || !catalogItems.length) return;
     const rowHeight = catalogItems[0].getBoundingClientRect().height || 132;
-    const viewportHeight = catalogListViewport.getBoundingClientRect().height || rowHeight * 3;
-    const targetY = viewportHeight / 2 - rowHeight * (index + .5);
+    const targetY = -rowHeight * index;
     if (hasGSAP && !reduceMotion && animate) {
-      gsap.to(catalogList, { y: targetY, duration: .82, ease: 'power4.inOut', overwrite: true });
+      gsap.to(catalogList, { y: targetY, duration: .48, ease: 'power3.inOut', overwrite: true });
     } else {
       gsap?.set(catalogList, { y: targetY });
       if (!hasGSAP) catalogList.style.transform = `translate3d(0, ${targetY}px, 0)`;
@@ -588,7 +585,9 @@
     const lang = root.dataset.lang === 'en' ? 'en' : 'zh';
     const previousArt = catalogArts.find((art) => art.classList.contains('is-active'));
     const nextArt = catalogArts.find((art) => art.dataset.catalogArt === key);
+    const previousIndex = activeCatalogIndex;
     const changed = key !== activeCatalogKey;
+    const direction = nextIndex >= previousIndex ? 1 : -1;
 
     activeCatalogKey = key;
     activeCatalogIndex = nextIndex;
@@ -612,18 +611,26 @@
     if (hasGSAP && !reduceMotion && animate && changed) {
       const textTargets = [catalogTitle, catalogStatus, catalogDescription, catalogCta].filter(Boolean);
       if (nextArt && nextArt !== previousArt) nextArt.classList.add('is-active');
+      updateCatalogText(data, lang);
       catalogTransition = gsap.timeline({ defaults: { overwrite: true } });
       if (previousArt && previousArt !== nextArt) {
-        catalogTransition.to(previousArt, { autoAlpha: 0, yPercent: -8, rotation: -1.2, scale: 1.025, duration: .44, ease: 'power3.in' }, 0);
+        catalogTransition.to(previousArt, {
+          autoAlpha: 0,
+          yPercent: -5 * direction,
+          rotation: 0,
+          scale: .92,
+          duration: .3,
+          ease: 'power3.inOut'
+        }, 0);
       }
-      catalogTransition.to(textTargets, { autoAlpha: 0, y: -10, duration: .2, ease: 'power2.in' }, 0)
-        .add(() => updateCatalogText(data, lang), .2);
       if (nextArt) {
         catalogTransition.fromTo(nextArt,
-          { autoAlpha: 0, yPercent: 10, rotation: 1.4, scale: .955 },
-          { autoAlpha: 1, yPercent: 0, rotation: 0, scale: 1, duration: .72, ease: 'power4.out' }, .2);
+          { autoAlpha: 0, yPercent: 10 * direction, rotation: 0, scale: 1.04 },
+          { autoAlpha: 1, yPercent: 0, rotation: 0, scale: 1, duration: .46, ease: 'power3.out' }, .14);
       }
-      catalogTransition.to(textTargets, { autoAlpha: 1, y: 0, duration: .38, stagger: .035, ease: 'power3.out' }, .28)
+      catalogTransition.fromTo(textTargets,
+        { autoAlpha: 0, y: 8 },
+        { autoAlpha: 1, y: 0, duration: .26, stagger: .025, ease: 'power3.out' }, .12)
         .add(() => {
           catalogArts.forEach((art) => {
             if (art !== nextArt) {
@@ -638,12 +645,6 @@
     }
   };
 
-  catalogItems.forEach((item) => {
-    const key = item.dataset.catalogItem;
-    item.addEventListener('mouseenter', () => setCatalog(key));
-    item.addEventListener('focus', () => setCatalog(key));
-    item.addEventListener('click', () => setCatalog(key));
-  });
   catalogPreview?.addEventListener('click', (event) => {
     if (catalogData[activeCatalogKey]?.placeholder) event.preventDefault();
   });
@@ -653,7 +654,7 @@
 
   if (catalogShell && catalogItems.length > 1 && hasGSAP && window.ScrollTrigger && !reduceMotion) {
     const catalogMedia = gsap.matchMedia();
-    catalogMedia.add('(min-width: 981px)', () => {
+    catalogMedia.add('(min-width: 601px)', () => {
       const steps = catalogItems.length - 1;
       const enterTimeline = gsap.timeline({
         scrollTrigger: {
@@ -669,35 +670,167 @@
         .from('.catalog-list-viewport', { y: 70, autoAlpha: 0, duration: 1 }, .08)
         .from('.catalog-preview', { x: 90, autoAlpha: 0, rotation: 2.6, duration: 1 }, .04)
         .from('.catalog-rail', { autoAlpha: 0, duration: .7 }, .3);
+      let wheelTween = null;
+      let wheelLocked = false;
+      let wheelReleaseTimer = null;
+      let wheelAccumulator = 0;
+      const scheduleWheelRelease = (delay = 260) => {
+        if (wheelReleaseTimer) window.clearTimeout(wheelReleaseTimer);
+        wheelReleaseTimer = window.setTimeout(() => { wheelLocked = false; }, delay);
+      };
 
-      const scrollDistance = () => Math.max(window.innerHeight * 4.1, steps * window.innerHeight * .72);
-      const trigger = ScrollTrigger.create({
-        trigger: '.product-catalog',
-        start: 'top top+=74',
-        end: () => `+=${scrollDistance()}`,
-        pin: catalogShell,
-        pinSpacing: true,
-        scrub: .22,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        snap: {
-          snapTo: (value) => Math.round(value * steps) / steps,
-          duration: { min: .14, max: .34 },
-          delay: .04,
-          ease: 'power2.inOut'
-        },
-        onEnter: () => header?.classList.remove('is-light'),
-        onEnterBack: () => header?.classList.remove('is-light'),
-        onLeave: () => requestAnimationFrame(updateHeader),
-        onLeaveBack: () => requestAnimationFrame(updateHeader),
-        onUpdate: (self) => {
-          header?.classList.remove('is-light');
-          const index = Math.min(steps, Math.max(0, Math.round(self.progress * steps)));
-          const key = catalogItems[index]?.dataset.catalogItem;
-          if (key && key !== activeCatalogKey) setCatalog(key);
+      const scrollToSection = (section) => {
+        if (!section) return;
+        wheelTween?.kill();
+        const scrollProxy = { y: window.scrollY };
+        const targetY = Math.max(0, window.scrollY + section.getBoundingClientRect().top - (header?.offsetHeight || 74));
+        if (wheelReleaseTimer) window.clearTimeout(wheelReleaseTimer);
+        wheelLocked = true;
+        wheelTween = gsap.to(scrollProxy, {
+          y: targetY,
+          duration: .48,
+          ease: 'power3.inOut',
+          overwrite: true,
+          onUpdate: () => window.scrollTo(0, scrollProxy.y),
+          onComplete: () => scheduleWheelRelease()
+        });
+      };
+
+      const handleCatalogWheel = (event) => {
+        if (event.ctrlKey || !event.deltaY) return;
+        const catalogRect = qs('.product-catalog')?.getBoundingClientRect();
+        const headerHeight = header?.offsetHeight || 74;
+        const insideCatalog = catalogRect
+          && catalogRect.top <= headerHeight + 60
+          && catalogRect.bottom >= window.innerHeight - 60;
+        if (!insideCatalog) return;
+
+        const direction = Math.sign(event.deltaY);
+        event.preventDefault();
+        if (Math.abs(catalogRect.top - headerHeight) > 2) {
+          scrollToSection(qs('.product-catalog'));
+          return;
         }
-      });
-      return () => { trigger.kill(); enterTimeline.scrollTrigger?.kill(); enterTimeline.kill(); };
+        if (performance.now() < (window.__mfSectionWheelGuardUntil || 0)) {
+          window.__mfSectionWheelGuardUntil = performance.now() + 360;
+          return;
+        }
+        if (wheelLocked) {
+          scheduleWheelRelease();
+          return;
+        }
+
+        wheelAccumulator = Math.sign(wheelAccumulator || event.deltaY) === direction
+          ? wheelAccumulator + event.deltaY
+          : event.deltaY;
+        if (Math.abs(wheelAccumulator) < 24) return;
+        wheelAccumulator = 0;
+
+        const currentStep = activeCatalogIndex;
+        const nextStep = currentStep + direction;
+        if (nextStep < 0) {
+          window.__mfSectionWheelGuardUntil = performance.now() + 520;
+          scrollToSection(qs('main > section[data-part="1"]'));
+        } else if (nextStep > steps) {
+          window.__mfSectionWheelGuardUntil = performance.now() + 520;
+          scrollToSection(qs('main > section[data-part="3"]'));
+        } else {
+          const key = catalogItems[nextStep]?.dataset.catalogItem;
+          if (key) setCatalog(key);
+          wheelLocked = true;
+          scheduleWheelRelease();
+        }
+      };
+
+      window.addEventListener('wheel', handleCatalogWheel, { passive: false, capture: true });
+      const skipCatalog = () => {
+        const lastKey = catalogItems[steps]?.dataset.catalogItem;
+        if (lastKey) setCatalog(lastKey, { animate: false });
+        window.__mfSectionWheelGuardUntil = performance.now() + 520;
+        scrollToSection(qs('main > section[data-part="3"]'));
+      };
+      catalogSkip?.addEventListener('click', skipCatalog);
+      return () => {
+        window.removeEventListener('wheel', handleCatalogWheel, { capture: true });
+        catalogSkip?.removeEventListener('click', skipCatalog);
+        if (wheelReleaseTimer) window.clearTimeout(wheelReleaseTimer);
+        wheelTween?.kill();
+        enterTimeline.scrollTrigger?.kill();
+        enterTimeline.kill();
+      };
+    });
+  }
+
+  // Desktop sections behave like complete pages. The catalog owns its pinned
+  // wheel sequence; outside it, one physical gesture advances one full part.
+  if (hasGSAP && !reduceMotion && qs('main > section[data-part]')) {
+    const sectionMedia = gsap.matchMedia();
+    sectionMedia.add('(min-width: 601px)', () => {
+      const sections = qsa('main > section[data-part]');
+      let sectionWheelTween = null;
+      let sectionWheelLocked = false;
+      let sectionWheelReleaseTimer = null;
+      let sectionWheelAccumulator = 0;
+      const sectionTop = (section) => window.scrollY + section.getBoundingClientRect().top - (header?.offsetHeight || 74);
+      const transitionTo = (section) => {
+        const targetY = Math.max(0, sectionTop(section));
+        const proxy = { y: window.scrollY };
+        if (section.dataset.part === '2') {
+          const firstKey = catalogItems[0]?.dataset.catalogItem;
+          if (firstKey) setCatalog(firstKey, { animate: false });
+          window.__mfSectionWheelGuardUntil = performance.now() + 720;
+        }
+        sectionWheelLocked = true;
+        sectionWheelTween?.kill();
+        sectionWheelTween = gsap.to(proxy, {
+          y: targetY,
+          duration: .68,
+          ease: 'power4.inOut',
+          overwrite: true,
+          onUpdate: () => window.scrollTo(0, proxy.y),
+          onComplete: () => {
+            if (sectionWheelReleaseTimer) window.clearTimeout(sectionWheelReleaseTimer);
+            sectionWheelReleaseTimer = window.setTimeout(() => { sectionWheelLocked = false; }, 180);
+          }
+        });
+      };
+
+      const handleSectionWheel = (event) => {
+        if (event.defaultPrevented || event.ctrlKey || !event.deltaY) return;
+        const currentY = window.scrollY;
+        const headerHeight = header?.offsetHeight || 74;
+        const viewportAnchor = currentY + headerHeight + 8;
+        const tops = sections.map((section) => sectionTop(section));
+        let currentIndex = 0;
+        tops.forEach((top, index) => { if (top <= viewportAnchor) currentIndex = index; });
+        if (currentIndex === 1) return;
+
+        event.preventDefault();
+        if (sectionWheelLocked) {
+          if (sectionWheelReleaseTimer) window.clearTimeout(sectionWheelReleaseTimer);
+          sectionWheelReleaseTimer = window.setTimeout(() => { sectionWheelLocked = false; }, 180);
+          return;
+        }
+        const direction = Math.sign(event.deltaY);
+        sectionWheelAccumulator = Math.sign(sectionWheelAccumulator || event.deltaY) === direction
+          ? sectionWheelAccumulator + event.deltaY
+          : event.deltaY;
+        if (Math.abs(sectionWheelAccumulator) < 24) return;
+        sectionWheelAccumulator = 0;
+
+        if (direction > 0 && currentIndex < sections.length - 1) {
+          transitionTo(sections[currentIndex + 1]);
+        } else if (direction < 0 && currentIndex > 0) {
+          transitionTo(sections[currentIndex - 1]);
+        }
+      };
+
+      window.addEventListener('wheel', handleSectionWheel, { passive: false, capture: true });
+      return () => {
+        window.removeEventListener('wheel', handleSectionWheel, { capture: true });
+        if (sectionWheelReleaseTimer) window.clearTimeout(sectionWheelReleaseTimer);
+        sectionWheelTween?.kill();
+      };
     });
   }
 
@@ -713,17 +846,11 @@
         .to(originPanel, { x: 58, autoAlpha: .28, ease: 'none' }, 0);
     }
     qsa('main > section[data-part]:not(.hero):not(.product-catalog)').forEach((section) => {
-      const wipe = document.createElement('div');
-      wipe.className = 'part-transition-wipe';
-      wipe.setAttribute('aria-hidden', 'true');
-      section.prepend(wipe);
       const revealTargets = qsa('.section-shell > *, .installer-layout > *, .contact-layout > *', section).slice(0, 8);
       const tl = gsap.timeline({
         scrollTrigger: { trigger: section, start: 'top 84%', toggleActions: 'play none none reverse' }
       });
-      tl.fromTo(wipe, { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: .44, ease: 'power3.inOut' })
-        .to(wipe, { scaleX: 0, transformOrigin: 'right center', duration: .44, ease: 'power3.inOut' })
-        .from(revealTargets, { y: 54, autoAlpha: 0, stagger: .07, duration: .72, ease: 'power3.out' }, .18);
+      tl.from(revealTargets, { y: 38, autoAlpha: 0, stagger: .055, duration: .62, ease: 'power3.out' });
     });
   }
 
@@ -876,7 +1003,7 @@
     if (entryWatchdog) window.clearTimeout(entryWatchdog);
     if (window.__mfEntryNativeWatchdog) window.clearTimeout(window.__mfEntryNativeWatchdog);
     if (entry) {
-      entry.classList.remove('is-igniting', 'is-bursting');
+      entry.classList.remove('is-igniting', 'is-bursting', 'is-page-transition');
       if (hide) {
         entry.style.display = 'none';
         entry.style.opacity = '0';
@@ -950,6 +1077,8 @@
       const symbolRect = entrySymbol.getBoundingClientRect();
       const symbolX = symbolRect.left + symbolRect.width / 2;
       const symbolY = symbolRect.top + symbolRect.height / 2;
+      entry.style.setProperty('--mf-entry-center-x', `${symbolX}px`);
+      entry.style.setProperty('--mf-entry-center-y', `${symbolY}px`);
       const portalBase = Math.max(1, entryPortal.getBoundingClientRect().width || entryPortal.offsetWidth || 120);
       const targetX = target?.x ?? window.innerWidth / 2;
       const targetY = target?.y ?? window.innerHeight / 2;
@@ -957,7 +1086,7 @@
       const progressProxy = { value: 0 };
 
       if (target?.node) gsap.set(target.node, { autoAlpha: 0 });
-      gsap.set(entry, { display: 'grid', autoAlpha: 1, pointerEvents: 'all', '--mf-flash': 0, '--mf-vignette': .92 });
+      gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, pointerEvents: 'all', '--mf-flash': 0, '--mf-vignette': .92 });
       gsap.set(entryGrid, { autoAlpha: .42, scale: 1.12 });
       gsap.set(entryStage, { autoAlpha: 1, x: 0, y: 0 });
       gsap.set(entrySymbol, { scale: .34, rotation: -42, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
@@ -1019,37 +1148,41 @@
   };
 
   const runInternalReveal = () => {
-    if (!entry || !entryPortal || !hasGSAP || reduceMotion) {
+    if (!entry || !entrySymbol || !hasGSAP || reduceMotion) {
       releaseEntry();
       return;
     }
     lockEntryScroll();
-    gsap.set(entry, { display: 'grid', autoAlpha: 1, backgroundColor: '#0d0e0c', pointerEvents: 'all' });
-    gsap.set(entryGrid, { autoAlpha: .22, scale: 1.04 });
-    gsap.set(entryStage, { autoAlpha: 0 });
-    setPortalAt(window.innerWidth / 2, window.innerHeight / 2, .72, 1);
+    entry.classList.add('is-page-transition');
+    gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, backgroundColor: '#0d0e0c', pointerEvents: 'all' });
+    gsap.set(entryGrid, { autoAlpha: .18, scale: 1 });
+    gsap.set(entryStage, { autoAlpha: 1 });
+    gsap.set(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, x: 0, y: 0, transformOrigin: '50% 50%' });
+    gsap.set(entryPortal, { autoAlpha: 0 });
     startHeroIntro();
     entryTimeline = gsap.timeline({ onComplete: releaseEntry, onInterrupt: forceFinishEntry })
-      .to(entryPortal, { scale: .14, autoAlpha: 0, duration: .46, ease: 'expo.inOut' }, 0)
-      .to(entryGrid, { scale: .96, autoAlpha: 0, duration: .48 }, 0)
-      .to(entry, { backgroundColor: 'rgba(13,14,12,0)', autoAlpha: 0, pointerEvents: 'none', duration: .54 }, 0);
+      .to(entrySymbol, { scale: .68, rotation: 12, autoAlpha: 0, duration: .58, ease: 'power3.inOut' }, 0)
+      .to(entryGrid, { scale: 1.06, autoAlpha: 0, duration: .62, ease: 'power2.out' }, 0)
+      .to(entry, { autoAlpha: 0, pointerEvents: 'none', duration: .34, ease: 'power2.out' }, .3);
   };
 
   const navigateWithForge = (href) => {
-    if (!entry || !entryPortal || !hasGSAP || reduceMotion) {
+    if (!entry || !entrySymbol || !hasGSAP || reduceMotion) {
       window.location.href = href;
       return;
     }
     try { sessionStorage.setItem('mfInternalNav', '1'); } catch (error) {}
     lockEntryScroll();
-    gsap.set(entry, { display: 'grid', autoAlpha: 1, backgroundColor: 'rgba(13,14,12,0)', pointerEvents: 'all' });
-    gsap.set(entryGrid, { autoAlpha: 0, scale: .96 });
-    gsap.set(entryStage, { autoAlpha: 0 });
-    setPortalAt(window.innerWidth / 2, window.innerHeight / 2, .08, 0);
+    entry.classList.add('is-page-transition');
+    gsap.set(entry, { display: 'grid', autoAlpha: 0, scaleY: 1, backgroundColor: '#0d0e0c', pointerEvents: 'all' });
+    gsap.set(entryGrid, { autoAlpha: 0, scale: 1.06 });
+    gsap.set(entryStage, { autoAlpha: 1 });
+    gsap.set(entrySymbol, { scale: .68, rotation: -12, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
+    gsap.set(entryPortal, { autoAlpha: 0 });
     entryTimeline = gsap.timeline({ onComplete: () => { window.location.href = href; } })
-      .to(entry, { backgroundColor: '#0d0e0c', duration: .42, ease: 'power2.inOut' }, 0)
-      .to(entryGrid, { autoAlpha: .24, scale: 1, duration: .38 }, .04)
-      .to(entryPortal, { scale: .76, autoAlpha: 1, duration: .42, ease: 'back.out(1.4)' }, .02);
+      .to(entry, { autoAlpha: 1, duration: .24, ease: 'power2.out' }, 0)
+      .to(entryGrid, { autoAlpha: .18, scale: 1, duration: .42, ease: 'power2.out' }, .08)
+      .to(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, duration: .5, ease: 'power3.out' }, .08);
   };
 
   qsa('a[href]').forEach((link) => {
