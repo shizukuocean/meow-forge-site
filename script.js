@@ -560,7 +560,10 @@
   const moveCatalogList = (index, { animate = true } = {}) => {
     if (!catalogList || !catalogListViewport || !catalogItems.length) return;
     const rowHeight = catalogItems[0].getBoundingClientRect().height || 132;
-    const targetY = -rowHeight * index;
+    const listHeight = catalogList.scrollHeight || rowHeight * catalogItems.length;
+    const viewportHeight = catalogListViewport.clientHeight || rowHeight;
+    const maxTravel = Math.max(0, listHeight - viewportHeight);
+    const targetY = -Math.min(rowHeight * index, maxTravel);
     if (hasGSAP && !reduceMotion && animate) {
       gsap.to(catalogList, { y: targetY, duration: .48, ease: 'power3.inOut', overwrite: true });
     } else {
@@ -1003,7 +1006,7 @@
     if (entryWatchdog) window.clearTimeout(entryWatchdog);
     if (window.__mfEntryNativeWatchdog) window.clearTimeout(window.__mfEntryNativeWatchdog);
     if (entry) {
-      entry.classList.remove('is-igniting', 'is-bursting', 'is-page-transition');
+      entry.classList.remove('is-igniting', 'is-bursting', 'is-page-transition', 'is-page-exit', 'is-page-arrival');
       if (hide) {
         entry.style.display = 'none';
         entry.style.opacity = '0';
@@ -1013,6 +1016,7 @@
     const core = coreNode();
     if (core) core.style.removeProperty('opacity');
     document.documentElement.classList.remove('mf-entry-pending');
+    document.documentElement.classList.remove('mf-entry-internal');
     unlockEntryScroll();
     try { sessionStorage.removeItem('mfInternalNav'); } catch (error) {}
     startHeroIntro();
@@ -1153,17 +1157,18 @@
       return;
     }
     lockEntryScroll();
-    entry.classList.add('is-page-transition');
-    gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, backgroundColor: '#0d0e0c', pointerEvents: 'all' });
-    gsap.set(entryGrid, { autoAlpha: .18, scale: 1 });
+    entry.classList.add('is-page-transition', 'is-page-arrival');
+    gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, clipPath: 'inset(0% 0% 0% 0%)', backgroundColor: '#0d0e0c', pointerEvents: 'all' });
+    gsap.set(entryGrid, { autoAlpha: .28, scale: 1 });
     gsap.set(entryStage, { autoAlpha: 1 });
     gsap.set(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, x: 0, y: 0, transformOrigin: '50% 50%' });
-    gsap.set(entryPortal, { autoAlpha: 0 });
+    gsap.set(entryPortal, { xPercent: -50, yPercent: -50, x: innerWidth / 2, y: innerHeight / 2, scale: .72, autoAlpha: .9 });
     startHeroIntro();
     entryTimeline = gsap.timeline({ onComplete: releaseEntry, onInterrupt: forceFinishEntry })
-      .to(entrySymbol, { scale: .68, rotation: 12, autoAlpha: 0, duration: .58, ease: 'power3.inOut' }, 0)
-      .to(entryGrid, { scale: 1.06, autoAlpha: 0, duration: .62, ease: 'power2.out' }, 0)
-      .to(entry, { autoAlpha: 0, pointerEvents: 'none', duration: .34, ease: 'power2.out' }, .3);
+      .to(entryPortal, { scale: 3.2, autoAlpha: 0, duration: .7, ease: 'expo.out' }, 0)
+      .to(entrySymbol, { scale: .62, rotation: 45, autoAlpha: 0, duration: .52, ease: 'power3.inOut' }, .04)
+      .to(entryGrid, { scale: 1.08, autoAlpha: 0, duration: .64, ease: 'power2.out' }, 0)
+      .to(entry, { clipPath: 'inset(0% 0% 100% 0%)', pointerEvents: 'none', duration: .68, ease: 'power4.inOut' }, .16);
   };
 
   const navigateWithForge = (href) => {
@@ -1173,16 +1178,17 @@
     }
     try { sessionStorage.setItem('mfInternalNav', '1'); } catch (error) {}
     lockEntryScroll();
-    entry.classList.add('is-page-transition');
-    gsap.set(entry, { display: 'grid', autoAlpha: 0, scaleY: 1, backgroundColor: '#0d0e0c', pointerEvents: 'all' });
-    gsap.set(entryGrid, { autoAlpha: 0, scale: 1.06 });
+    entry.classList.add('is-page-transition', 'is-page-exit');
+    gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, clipPath: 'inset(100% 0% 0% 0%)', backgroundColor: '#0d0e0c', pointerEvents: 'all' });
+    gsap.set(entryGrid, { autoAlpha: 0, scale: 1.08 });
     gsap.set(entryStage, { autoAlpha: 1 });
-    gsap.set(entrySymbol, { scale: .68, rotation: -12, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
-    gsap.set(entryPortal, { autoAlpha: 0 });
+    gsap.set(entrySymbol, { scale: .44, rotation: -45, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
+    gsap.set(entryPortal, { xPercent: -50, yPercent: -50, x: innerWidth / 2, y: innerHeight / 2, scale: .08, autoAlpha: 0 });
     entryTimeline = gsap.timeline({ onComplete: () => { window.location.href = href; } })
-      .to(entry, { autoAlpha: 1, duration: .24, ease: 'power2.out' }, 0)
-      .to(entryGrid, { autoAlpha: .18, scale: 1, duration: .42, ease: 'power2.out' }, .08)
-      .to(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, duration: .5, ease: 'power3.out' }, .08);
+      .to(entry, { clipPath: 'inset(0% 0% 0% 0%)', duration: .54, ease: 'power4.inOut' }, 0)
+      .to(entryGrid, { autoAlpha: .28, scale: 1, duration: .48, ease: 'power2.out' }, .12)
+      .to(entryPortal, { scale: .72, autoAlpha: .9, duration: .42, ease: 'back.out(1.45)' }, .24)
+      .to(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, duration: .48, ease: 'power3.out' }, .2);
   };
 
   qsa('a[href]').forEach((link) => {

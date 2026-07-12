@@ -11,6 +11,9 @@
 <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
 <script data-mf-entry-boot="">
 (function(){
+  try {
+    if (sessionStorage.getItem('mfInternalNav') === '1') document.documentElement.classList.add('mf-entry-internal');
+  } catch (error) {}
   document.documentElement.classList.add('mf-entry-pending');
   window.__mfEntryNativeWatchdog = window.setTimeout(function(){
     document.documentElement.classList.remove('mf-entry-pending','mf-scroll-locked');
@@ -130,7 +133,7 @@
 <span>ORBITAL HUB</span><strong>MEOWDESK</strong><i></i></div>
 </div>
 <section class="product-catalog dark-section" data-cursor="#ff6745" data-part="2" id="product-index">
-<div class="section-shell catalog-shell"><div class="part-marker"><span>02</span><b data-i18n-en="Product System" data-i18n-zh="产品系统">产品系统</b></div>
+<div class="section-shell catalog-shell">
 <div class="catalog-intro">
 <h2><span class="lang-zh">独立工作，<br/>进入同一系统。</span><span class="lang-en">Independent products.<br/>One shared system.</span></h2>
 <i aria-hidden="true" class="catalog-intro__rule"></i></div>

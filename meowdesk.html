@@ -11,6 +11,9 @@
 <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
 <script data-mf-entry-boot="">
 (function(){
+  try {
+    if (sessionStorage.getItem('mfInternalNav') === '1') document.documentElement.classList.add('mf-entry-internal');
+  } catch (error) {}
   document.documentElement.classList.add('mf-entry-pending');
   window.__mfEntryNativeWatchdog = window.setTimeout(function(){
     document.documentElement.classList.remove('mf-entry-pending','mf-scroll-locked');
