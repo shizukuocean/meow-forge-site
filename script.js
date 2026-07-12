@@ -754,6 +754,33 @@
     if (event.key === 'Escape') closeDropdowns();
   });
 
+  // Keep the complete navigation available when the header collapses below desktop width.
+  const siteHeader = qs('[data-header]');
+  const mobileNavToggle = qs('[data-mobile-nav-toggle]');
+  const closeMobileNav = () => {
+    if (!siteHeader || !mobileNavToggle) return;
+    siteHeader.classList.remove('is-mobile-nav-open');
+    mobileNavToggle.setAttribute('aria-expanded', 'false');
+    mobileNavToggle.setAttribute('aria-label', '打开导航');
+    closeDropdowns();
+  };
+  mobileNavToggle?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const nextOpen = !siteHeader.classList.contains('is-mobile-nav-open');
+    siteHeader.classList.toggle('is-mobile-nav-open', nextOpen);
+    mobileNavToggle.setAttribute('aria-expanded', String(nextOpen));
+    mobileNavToggle.setAttribute('aria-label', nextOpen ? '关闭导航' : '打开导航');
+  });
+  siteHeader?.querySelectorAll('.main-nav > a').forEach((link) => {
+    link.addEventListener('click', closeMobileNav);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMobileNav();
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) closeMobileNav();
+  }, { passive: true });
+
   // v0.7: geometry-true Brain2 connections. Each line joins circle edge to circle edge.
   const brainSystem = qs('.brain-system');
   const brainCore = qs('.brain-system__core');
