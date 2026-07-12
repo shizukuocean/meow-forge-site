@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-lang="zh" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Meow Forge 的产品判断记录：哪些能力被留下、哪些方向被放弃，以及内部系统如何变成外部用户能理解的产品。" name="description"/>
+<title>Build Log — Meow Forge</title>
+<link href="assets/meow-forge-symbol-reference.png" rel="icon" type="image/png"/>
+<link href="styles.css" rel="stylesheet"/>
+<script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+<script data-mf-entry-boot="">
+(function(){
+  document.documentElement.classList.add('mf-entry-pending');
+  window.__mfEntryNativeWatchdog = window.setTimeout(function(){
+    document.documentElement.classList.remove('mf-entry-pending','mf-scroll-locked');
+    var body = document.body;
+    if (body) { body.classList.remove('mf-entry-lock'); body.style.removeProperty('top'); }
+    var entry = document.querySelector('[data-mf-entry]');
+    if (entry) { entry.style.display = 'none'; entry.style.opacity = '0'; entry.style.pointerEvents = 'none'; }
+  }, 7000);
+})();
+</script>
+</head><body class="standalone-page build-log-page v08-flat"><div aria-hidden="true" class="mf-entry" data-mf-entry="">
+<div class="mf-entry__grid"></div>
+<div class="mf-entry__portal" data-mf-entry-portal=""></div>
+<div class="mf-entry__stage" data-mf-entry-stage="">
+<div class="mf-entry__symbol" data-mf-entry-symbol="">
+<img alt="" src="assets/meow-forge-symbol-reverse.png"/>
+</div>
+<p class="mf-entry__eyebrow">MEOW FORGE / IGNITION</p>
+<div class="mf-entry__progress">
+<strong data-mf-progress="">00</strong>
+<span><i data-mf-progress-bar=""></i></span>
+<b data-mf-progress-label="">INITIALIZING</b>
+</div>
+</div>
+</div><div aria-hidden="true" class="cursor-spark"></div><header class="site-header" data-header="">
+<a aria-label="Meow Forge 首页" class="brand" href="index.html#top">
+<span aria-hidden="true" class="brand__lockup brand__lockup--composed">
+<span aria-hidden="true" class="brand__asset-set brand__asset-set--dark">
+<img alt="" class="brand__symbol-img" src="assets/meow-forge-symbol-dark-v06-final.png"/>
+<img alt="" class="brand__wordmark-img" src="assets/meow-forge-wordmark-dark-v06-final.png"/>
+</span>
+<span aria-hidden="true" class="brand__asset-set brand__asset-set--reverse">
+<img alt="" class="brand__symbol-img" src="assets/meow-forge-symbol-reverse.png"/>
+<img alt="" class="brand__wordmark-img" src="assets/meow-forge-wordmark-reverse-v06-final.png"/>
+</span></span>
+</a>
+<nav aria-label="主要导航" class="main-nav">
+<a data-i18n-en="Galaxy Map" data-i18n-zh="产品星系图" href="galaxy-map.html">产品星系图</a>
+<div class="nav-dropdown" data-dropdown="">
+<button aria-expanded="false" class="nav-trigger" type="button"><span class="nav-trigger__label" data-i18n-en="Products" data-i18n-zh="产品">产品</span></button>
+<div class="nav-menu nav-menu--products" role="menu">
+<p data-i18n-en="PLANETS" data-i18n-zh="独立产品">PLANETS / 独立产品</p>
+<a href="brain2.html"><span>●</span><div><strong>Brain2</strong><small>PLANET · PACKAGING</small></div><i>↗</i></a>
+<a href="galaxy-map.html#meow-installer"><span>●</span><div><strong>Meow Installer</strong><small>PLANET · IN DEVELOPMENT</small></div><i>↗</i></a>
+<p data-i18n-en="ORBITAL HUB" data-i18n-zh="轨道枢纽">ORBITAL HUB / 轨道枢纽</p>
+<a href="meowdesk.html"><span>⌁</span><div><strong>Meowdesk</strong><small>INTEGRATION ENVIRONMENT</small></div><i>↗</i></a>
+<p data-i18n-en="IN FORMATION" data-i18n-zh="形成中">IN FORMATION / 形成中</p>
+<a href="galaxy-map.html#meowviewer"><span>◌</span><div><strong>MeowViewer</strong><small>PLANET CANDIDATE</small></div><i>↗</i></a>
+<a href="galaxy-map.html#dev-helper"><span>◌</span><div><strong>Meow Dev Helper</strong><small>PLANET CANDIDATE · MVP</small></div><i>↗</i></a>
+<a href="galaxy-map.html#meow-protector"><span>◌</span><div><strong>Meow Protector</strong><small>PLANET CANDIDATE</small></div><i>↗</i></a>
+<a aria-disabled="true" href="galaxy-map.html#coming-soon"><span>·</span><div><strong>Coming Soon</strong><small>FUTURE OBJECT</small></div><i>—</i></a></div></div>
+<a data-i18n-en="Build Log" data-i18n-zh="Build Log" href="build-log.html">Build Log</a>
+<a data-i18n-en="About" data-i18n-zh="关于" href="about.html">关于</a>
+<a data-i18n-en="Contact" data-i18n-zh="联系" href="index.html#contact">联系</a>
+</nav>
+<div class="header-actions">
+<button aria-label="切换语言" class="lang-switch" data-lang-toggle="" type="button">中 / EN</button>
+<a class="header-cta" href="galaxy-map.html">查看星系 <span>↗</span></a>
+</div>
+</header><main id="top">
+<section class="editorial-hero editorial-hero--build paper-section" data-cursor="#151614">
+<div class="editorial-grid"></div>
+<div class="section-shell editorial-hero__layout">
+<p class="kicker kicker--dark">BUILD LOG / PRODUCT JUDGMENT</p>
+<h1><span class="lang-zh">展示产品，<br/>也展示判断过程。</span><span aria-hidden="true" class="lang-en">Showing products,<br/>and the judgment behind them.</span></h1>
+<p class="editorial-hero__lead" data-i18n-en="This is not a record of every code change. It records which capabilities were kept, which directions were dropped and why." data-i18n-zh="这里不记录每一次代码修改，而是记录哪些能力被留下、哪些方向被放弃，以及为什么。">这里不记录每一次代码修改，而是记录哪些能力被留下、哪些方向被放弃，以及为什么。</p>
+<div aria-hidden="true" class="editorial-hero__mark editorial-hero__mark--orange"><i></i><b>BL</b></div>
+</div>
+</section>
+<section class="build-log-intro dark-section" data-cursor="#ff6745">
+<div class="section-shell story-split">
+<div><p class="kicker">WHY SHOW THE PROCESS</p><h2><span class="lang-zh">不是流水账，<br/>而是判断留下的痕迹。</span><span aria-hidden="true" class="lang-en">Not a running diary,<br/>but traces left by decisions.</span></h2></div>
+<div class="story-copy"><p data-i18n-en="Meow Forge products come from real use and go through deletion, renaming, restructuring and abandonment. Build Log shows only decisions that have reached a conclusion and help outsiders understand the product." data-i18n-zh="Meow Forge 的产品来自真实使用，也经历删减、改名、重构和放弃。Build Log 只展示已经形成结论、并能帮助外部理解产品的判断。">Meow Forge 的产品来自真实使用，也经历删减、改名、重构和放弃。Build Log 只展示已经形成结论、并能帮助外部理解产品的判断。</p><p data-i18n-en="Unsettled internal experiments, meaningless version details and unverified promises do not belong here." data-i18n-zh="仍在摇摆的内部实验、无意义的版本细节和未经验证的承诺，不放在这里。">仍在摇摆的内部实验、无意义的版本细节和未经验证的承诺，不放在这里。</p></div>
+</div>
+</section>
+<section class="build-log-list paper-section" data-cursor="#151614">
+<div class="section-shell">
+<article class="build-log-entry">
+<header><span>001</span><p>PRODUCT STRATEGY</p><h2>Brain2：从私人控制系统，到可以被别人接手的产品。</h2></header>
+<div class="judgment-grid">
+<div><small>OBSERVED / 观察</small><p>内部系统可以运行，但外部用户难以理解入口、治理、交接与维护之间的关系。</p></div>
+<div><small>KEPT / 保留</small><p>控制系统、治理规则、任务与事件、Agent 协作以及写回机制。</p></div>
+<div><small>DROPPED / 放弃</small><p>把 Brain2 简化成普通知识库，或只用“一次性 RAG”解释它。</p></div>
+<div><small>RESULT / 结果</small><p>把产品边界、交付组成和最低可行接入路径放到首位。</p></div>
+</div>
+</article>
+<article class="build-log-entry build-log-entry--dark">
+<header><span>002</span><p>VISUAL SYSTEM</p><h2>Meow 系列：同一家族，但不住在同一个房间。</h2></header>
+<div class="judgment-grid">
+<div><small>OBSERVED / 观察</small><p>Forge、Brain2 与 Meowdesk 的角色不同，强行统一视觉会抹掉产品性格。</p></div>
+<div><small>KEPT / 保留</small><p>共同的品牌人格、几何语言和亲缘关系。</p></div>
+<div><small>DROPPED / 放弃</small><p>用同一套配色与组件给所有产品统一换肤。</p></div>
+<div><small>RESULT / 结果</small><p>Forge 负责筛选与展示，Brain2 强调控制系统，Meowdesk 保留工作台气质。</p></div>
+</div>
+</article>
+<article class="build-log-entry build-log-entry--spark">
+<header><span>003</span><p>HOMEPAGE / v0.7</p><h2>把 Build Log 移出首页，让产品重新成为主线。</h2></header>
+<div class="judgment-grid">
+<div><small>OBSERVED / 观察</small><p>首页同时承担产品展示和完整开发叙事，会分散访客对产品价值的注意力。</p></div>
+<div><small>KEPT / 保留</small><p>顶部 Build Log 入口，以及经过编辑的产品判断记录。</p></div>
+<div><small>DROPPED / 放弃</small><p>在首页用大面积板块展示内部构建过程。</p></div>
+<div><small>RESULT / 结果</small><p>Build Log 成为独立页面；首页只讲品牌、产品、Shizuku 与合作入口。</p></div>
+</div>
+</article>
+</div>
+</section>
+<section class="build-log-next dark-section" data-cursor="#ff6745">
+<div class="section-shell connect-layout connect-layout--dark">
+<p class="kicker">THE NEXT JUDGMENT</p>
+<h2><span class="lang-zh">只有形成结论的判断，<br/>才会被写进这里。</span><span aria-hidden="true" class="lang-en">Only decisions that have reached a conclusion<br/>belong here.</span></h2>
+<div><p data-i18n-en="Future entries will continue around real product boundaries, user experience and delivery, rather than chasing update frequency." data-i18n-zh="后续条目会围绕真实产品边界、用户体验和交付方式持续增加，而不是追求更新频率。">后续条目会围绕真实产品边界、用户体验和交付方式持续增加，而不是追求更新频率。</p><a class="button button--light" href="index.html#product-index">返回产品目录 <span>↗</span></a></div>
+</div>
+</section>
+</main><footer class="site-footer">
+<div><img alt="" height="30" src="assets/meow-forge-symbol-reference.png" width="30"/><strong>MEOW FORGE</strong></div>
+<p>shizuku.T’s AI Product Site · Prototype v0.8</p>
+<p data-i18n-en="Payments, licensing, forms and automated delivery are not live." data-i18n-zh="无支付、授权、表单或自动交付功能上线。">无支付、授权、表单或自动交付功能上线。</p>
+</footer><div aria-live="polite" class="toast" data-toast="" role="status"></div><script src="assets/vendor/gsap.min.js"></script><script src="assets/vendor/ScrollTrigger.min.js"></script><script src="script.js"></script></body></html>

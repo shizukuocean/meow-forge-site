@@ -1,0 +1,21 @@
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# Local development artifacts
+.env
+.env.*
+!.env.example
+node_modules/
+.cache/
+dist/
+
+# Local archives and temporary extraction folders
+*.tmp
+*.temp
+_tmp/
+tmp/
