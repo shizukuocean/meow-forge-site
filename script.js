@@ -175,14 +175,10 @@
       y: 34, autoAlpha: 0, duration: .8, stagger: .11, ease: "power3.out"
     });
 
-    gsap.from(".meowdesk-frame", {
-      scrollTrigger: { trigger: ".meowdesk-frame", start: "top 78%", once: true },
-      y: 70, scale: .96, autoAlpha: 0, duration: 1.1, ease: "power3.out"
-    });
     gsap.to(".desk-callout--green", { y: -8, duration: 1.8, repeat: -1, yoyo: true, ease: "power1.inOut" });
     gsap.to(".desk-callout--blue", { y: 8, duration: 2.2, repeat: -1, yoyo: true, ease: "power1.inOut" });
 
-    const reveals = qsa(".build-card, .about-layout blockquote, .contact-layout h2");
+    const reveals = qsa(".build-card, .about-layout blockquote");
     reveals.forEach((element) => {
       gsap.from(element, {
         scrollTrigger: { trigger: element, start: "top 86%", once: true },
@@ -677,7 +673,7 @@
       let wheelLocked = false;
       let wheelReleaseTimer = null;
       let wheelAccumulator = 0;
-      const scheduleWheelRelease = (delay = 260) => {
+      const scheduleWheelRelease = (delay = 180) => {
         if (wheelReleaseTimer) window.clearTimeout(wheelReleaseTimer);
         wheelReleaseTimer = window.setTimeout(() => { wheelLocked = false; }, delay);
       };
@@ -691,7 +687,7 @@
         wheelLocked = true;
         wheelTween = gsap.to(scrollProxy, {
           y: targetY,
-          duration: .48,
+          duration: .44,
           ease: 'power3.inOut',
           overwrite: true,
           onUpdate: () => window.scrollTo(0, scrollProxy.y),
@@ -714,28 +710,22 @@
           scrollToSection(qs('.product-catalog'));
           return;
         }
-        if (performance.now() < (window.__mfSectionWheelGuardUntil || 0)) {
-          window.__mfSectionWheelGuardUntil = performance.now() + 360;
-          return;
-        }
-        if (wheelLocked) {
-          scheduleWheelRelease();
-          return;
-        }
+        if (performance.now() < (window.__mfSectionWheelGuardUntil || 0)) return;
+        if (wheelLocked) return;
 
         wheelAccumulator = Math.sign(wheelAccumulator || event.deltaY) === direction
           ? wheelAccumulator + event.deltaY
           : event.deltaY;
-        if (Math.abs(wheelAccumulator) < 24) return;
+        if (Math.abs(wheelAccumulator) < 30) return;
         wheelAccumulator = 0;
 
         const currentStep = activeCatalogIndex;
         const nextStep = currentStep + direction;
         if (nextStep < 0) {
-          window.__mfSectionWheelGuardUntil = performance.now() + 520;
+          window.__mfSectionWheelGuardUntil = performance.now() + 280;
           scrollToSection(qs('main > section[data-part="1"]'));
         } else if (nextStep > steps) {
-          window.__mfSectionWheelGuardUntil = performance.now() + 520;
+          window.__mfSectionWheelGuardUntil = performance.now() + 280;
           scrollToSection(qs('main > section[data-part="3"]'));
         } else {
           const key = catalogItems[nextStep]?.dataset.catalogItem;
@@ -749,7 +739,7 @@
       const skipCatalog = () => {
         const lastKey = catalogItems[steps]?.dataset.catalogItem;
         if (lastKey) setCatalog(lastKey, { animate: false });
-        window.__mfSectionWheelGuardUntil = performance.now() + 520;
+        window.__mfSectionWheelGuardUntil = performance.now() + 280;
         scrollToSection(qs('main > section[data-part="3"]'));
       };
       catalogSkip?.addEventListener('click', skipCatalog);
@@ -781,14 +771,14 @@
         if (section.dataset.part === '2') {
           const firstKey = catalogItems[0]?.dataset.catalogItem;
           if (firstKey) setCatalog(firstKey, { animate: false });
-          window.__mfSectionWheelGuardUntil = performance.now() + 720;
+          window.__mfSectionWheelGuardUntil = performance.now() + 280;
         }
         sectionWheelLocked = true;
         sectionWheelTween?.kill();
         sectionWheelTween = gsap.to(proxy, {
           y: targetY,
-          duration: .68,
-          ease: 'power4.inOut',
+          duration: .44,
+          ease: 'power3.inOut',
           overwrite: true,
           onUpdate: () => window.scrollTo(0, proxy.y),
           onComplete: () => {
@@ -802,30 +792,24 @@
         if (event.defaultPrevented || event.ctrlKey || !event.deltaY) return;
         const currentY = window.scrollY;
         const headerHeight = header?.offsetHeight || 74;
-        const viewportAnchor = currentY + headerHeight + 8;
         const tops = sections.map((section) => sectionTop(section));
-        let currentIndex = 0;
-        tops.forEach((top, index) => { if (top <= viewportAnchor) currentIndex = index; });
-        if (currentIndex === 1) return;
+        const alignedIndex = tops.findIndex((top) => Math.abs(top - currentY) <= 4);
+        if (alignedIndex === 1) return;
 
         event.preventDefault();
-        if (sectionWheelLocked) {
-          if (sectionWheelReleaseTimer) window.clearTimeout(sectionWheelReleaseTimer);
-          sectionWheelReleaseTimer = window.setTimeout(() => { sectionWheelLocked = false; }, 180);
-          return;
-        }
+        if (performance.now() < (window.__mfSectionWheelGuardUntil || 0)) return;
+        if (sectionWheelLocked) return;
         const direction = Math.sign(event.deltaY);
         sectionWheelAccumulator = Math.sign(sectionWheelAccumulator || event.deltaY) === direction
           ? sectionWheelAccumulator + event.deltaY
           : event.deltaY;
-        if (Math.abs(sectionWheelAccumulator) < 24) return;
+        if (Math.abs(sectionWheelAccumulator) < 30) return;
         sectionWheelAccumulator = 0;
 
-        if (direction > 0 && currentIndex < sections.length - 1) {
-          transitionTo(sections[currentIndex + 1]);
-        } else if (direction < 0 && currentIndex > 0) {
-          transitionTo(sections[currentIndex - 1]);
-        }
+        const targetIndex = direction > 0
+          ? tops.findIndex((top) => top > currentY + 4)
+          : tops.reduce((candidate, top, index) => top < currentY - 4 ? index : candidate, -1);
+        if (targetIndex >= 0) transitionTo(sections[targetIndex]);
       };
 
       window.addEventListener('wheel', handleSectionWheel, { passive: false, capture: true });
@@ -843,7 +827,7 @@
     const originPanel = qs('.origin-map');
     if (heroCopy && originPanel) {
       gsap.timeline({
-        scrollTrigger: { trigger: '.hero', start: 'bottom bottom', end: 'bottom top+=74', scrub: .8 }
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top+=74', scrub: .8 }
       })
         .to(heroCopy, { x: -58, autoAlpha: .28, ease: 'none' }, 0)
         .to(originPanel, { x: 58, autoAlpha: .28, ease: 'none' }, 0);
@@ -968,9 +952,9 @@
   const entrySymbol = qs('[data-mf-entry-symbol]');
   const entryPortal = qs('[data-mf-entry-portal]');
   const entryGrid = qs('.mf-entry__grid', entry || document);
-  const entryProgress = qs('[data-mf-progress]');
-  const entryProgressBar = qs('[data-mf-progress-bar]');
-  const entryProgressLabel = qs('[data-mf-progress-label]');
+  const entryRings = qs('.mf-entry__rings', entry || document);
+  const entryRingProgress = qs('[data-mf-ring-progress]');
+  const entryCalibrationRings = qsa('.mf-entry__rings circle:not([data-mf-ring-progress])', entry || document);
   let heroIntroStarted = false;
   let entryScrollY = 0;
   let entryTimeline = null;
@@ -1000,6 +984,12 @@
     window.__mfHeroIntro?.play();
   };
 
+  const settleHeroIntro = () => {
+    if (heroIntroStarted) return;
+    heroIntroStarted = true;
+    window.__mfHeroIntro?.progress(1);
+  };
+
   const releaseEntry = ({ hide = true } = {}) => {
     if (entryDone) return;
     entryDone = true;
@@ -1015,6 +1005,11 @@
     }
     const core = coreNode();
     if (core) core.style.removeProperty('opacity');
+    const orbit = qs('[data-core-orbit-system]');
+    if (orbit) {
+      orbit.style.removeProperty('opacity');
+      orbit.style.removeProperty('visibility');
+    }
     document.documentElement.classList.remove('mf-entry-pending');
     document.documentElement.classList.remove('mf-entry-internal');
     unlockEntryScroll();
@@ -1034,7 +1029,7 @@
       entryTimeline?.eventCallback?.('onInterrupt', null);
       entryTimeline?.kill();
     } catch (error) {}
-    if (entry && hasGSAP) gsap.killTweensOf([entry, entryStage, entrySymbol, entryPortal, entryGrid]);
+    if (entry && hasGSAP) gsap.killTweensOf([entry, entryStage, entrySymbol, entryPortal, entryGrid, entryRings, entryRingProgress]);
     entryForcing = false;
     releaseEntry();
   };
@@ -1074,10 +1069,12 @@
     window.scrollTo(0, 0);
     lockEntryScroll();
     entry.classList.add('is-igniting');
+    startHeroIntro();
 
     const beginIgnitionFrame = () => requestAnimationFrame(() => {
       if (entryDone) return;
       const target = coreTarget();
+      const orbitTarget = coreOrbitTarget();
       const symbolRect = entrySymbol.getBoundingClientRect();
       const symbolX = symbolRect.left + symbolRect.width / 2;
       const symbolY = symbolRect.top + symbolRect.height / 2;
@@ -1087,16 +1084,26 @@
       const targetX = target?.x ?? window.innerWidth / 2;
       const targetY = target?.y ?? window.innerHeight / 2;
       const targetScale = (target?.width ?? Math.min(innerWidth, innerHeight) * .44) / portalBase;
-      const progressProxy = { value: 0 };
-
       if (target?.node) gsap.set(target.node, { autoAlpha: 0 });
+      if (orbitTarget?.node) gsap.set(orbitTarget.node, { autoAlpha: 0 });
       gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, pointerEvents: 'all', '--mf-flash': 0, '--mf-vignette': .92 });
       gsap.set(entryGrid, { autoAlpha: .42, scale: 1.12 });
       gsap.set(entryStage, { autoAlpha: 1, x: 0, y: 0 });
       gsap.set(entrySymbol, { scale: .34, rotation: -42, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
       setPortalAt(symbolX, symbolY, .025, 0);
-      gsap.set(entryProgressBar, { scaleX: 0, transformOrigin: '0% 50%' });
-      gsap.set('.mf-entry__eyebrow, .mf-entry__progress', { y: 18, autoAlpha: 0 });
+      gsap.set(entryRings, { autoAlpha: 1, scale: 1, transformOrigin: '50% 50%' });
+      gsap.set(entryCalibrationRings, { clearProps: 'opacity,visibility' });
+      gsap.set(entryRingProgress, { clearProps: 'opacity,visibility,stroke,strokeWidth' });
+      gsap.set(entryRingProgress, { strokeDashoffset: 100 });
+
+      const loadingRingRect = entryRingProgress?.getBoundingClientRect();
+      const loadingRingX = loadingRingRect ? loadingRingRect.left + loadingRingRect.width / 2 : symbolX;
+      const loadingRingY = loadingRingRect ? loadingRingRect.top + loadingRingRect.height / 2 : symbolY;
+      const orbitScale = orbitTarget && loadingRingRect?.width
+        ? orbitTarget.width / loadingRingRect.width
+        : 1;
+      const orbitDeltaX = orbitTarget ? orbitTarget.x - loadingRingX : 0;
+      const orbitDeltaY = orbitTarget ? orbitTarget.y - loadingRingY : 0;
 
       entryTimeline = gsap.timeline({
         defaults: { ease: 'power3.out' },
@@ -1107,18 +1114,26 @@
       entryTimeline
         .to(entryGrid, { scale: 1, autoAlpha: .54, duration: 1.18, ease: 'expo.out' }, 0)
         .to(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, duration: .78, ease: 'expo.out' }, 0)
-        .to('.mf-entry__eyebrow, .mf-entry__progress', { y: 0, autoAlpha: 1, duration: .42, stagger: .07 }, .28)
-        .to(progressProxy, {
-          value: 100,
+        .to(entryRingProgress, {
+          strokeDashoffset: 0,
           duration: 1.24,
-          ease: 'power2.inOut',
-          onUpdate: () => {
-            const value = Math.round(progressProxy.value);
-            if (entryProgress) entryProgress.textContent = String(value).padStart(2, '0');
-            if (entryProgressBar) gsap.set(entryProgressBar, { scaleX: value / 100 });
-            if (entryProgressLabel) entryProgressLabel.textContent = value > 82 ? 'SYSTEM ALIGNED' : 'ALIGNING NODES';
-          }
+          ease: 'power2.inOut'
         }, .36)
+        // The completed loading arc hands off to the real Core orbit.
+        .to(entryCalibrationRings, { autoAlpha: 0, duration: .28, ease: 'power2.out' }, 1.54)
+        .to(entryRings, {
+          x: `+=${orbitDeltaX}`,
+          y: `+=${orbitDeltaY}`,
+          scale: orbitScale,
+          duration: .82,
+          ease: 'expo.inOut'
+        }, 1.60)
+        .to(entryRingProgress, {
+          stroke: orbitTarget?.stroke ?? 'rgba(21,22,20,.18)',
+          strokeWidth: orbitTarget?.strokeWidth ?? 1,
+          duration: .72,
+          ease: 'power2.inOut'
+        }, 1.66)
         .to(entrySymbol, { scale: 1.09, rotation: 4, duration: .11, yoyo: true, repeat: 1, ease: 'power2.inOut' }, 1.35)
         .to(entry, { '--mf-flash': .92, duration: .07, ease: 'power4.in' }, 1.48)
         .to(entry, { '--mf-flash': 0, duration: .24, ease: 'power3.out' }, 1.55)
@@ -1126,9 +1141,7 @@
         // The energy seed is born at the exact visual center of the official Logo.
         .to(entryPortal, { scale: .92, autoAlpha: 1, duration: .34, ease: 'back.out(1.6)' }, 1.48)
         .to(entrySymbol, { scale: .74, autoAlpha: .22, rotation: 18, duration: .28, ease: 'power3.in' }, 1.52)
-        .to('.mf-entry__eyebrow, .mf-entry__progress', { y: -22, autoAlpha: 0, duration: .24, ease: 'power2.in' }, 1.54)
         .to(entrySymbol, { scale: .22, autoAlpha: 0, rotation: 46, duration: .26, ease: 'power4.in' }, 1.72)
-        .call(startHeroIntro, null, 1.78)
         // One sphere travels into the real homepage Core; no second orange layer is introduced.
         .to(entryPortal, {
           x: targetX,
@@ -1140,7 +1153,11 @@
         .to(entry, { '--mf-vignette': 0, backgroundColor: 'rgba(13,14,12,0)', duration: .82, ease: 'power2.inOut' }, 1.88)
         .to(entryGrid, { scale: .94, autoAlpha: 0, duration: .68, ease: 'power2.out' }, 1.90)
         .to(entryStage, { autoAlpha: 0, duration: .22 }, 1.82)
-        .call(() => { if (target?.node) gsap.to(target.node, { autoAlpha: 1, duration: .22, ease: 'power1.out' }); }, null, 2.55)
+        .call(() => {
+          if (orbitTarget?.node) gsap.to(orbitTarget.node, { autoAlpha: 1, duration: .16, ease: 'none' });
+          if (target?.node) gsap.to(target.node, { autoAlpha: 1, duration: .22, ease: 'power1.out' });
+        }, null, 2.38)
+        .to(entryRingProgress, { autoAlpha: 0, duration: .16, ease: 'none' }, 2.38)
         .to(entryPortal, { autoAlpha: 0, duration: .24, ease: 'power1.out' }, 2.56)
         .to(entry, { autoAlpha: 0, pointerEvents: 'none', duration: .24 }, 2.58);
     });
@@ -1171,6 +1188,43 @@
       .to(entry, { clipPath: 'inset(0% 0% 100% 0%)', pointerEvents: 'none', duration: .68, ease: 'power4.inOut' }, .16);
   };
 
+  const coreOrbitTarget = () => {
+    const orbit = qs('[data-core-orbit-system]');
+    const ring = qs('.origin-orbit-system__ring', orbit || document);
+    if (!orbit || !ring) return null;
+    const rect = ring.getBoundingClientRect();
+    const style = getComputedStyle(ring);
+    return {
+      node: orbit,
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      width: rect.width,
+      stroke: style.borderTopColor,
+      strokeWidth: parseFloat(style.borderTopWidth) || 1
+    };
+  };
+
+  const runInternalHandoff = () => {
+    if (!entry || !hasGSAP || reduceMotion) {
+      releaseEntry();
+      return;
+    }
+    lockEntryScroll();
+    entry.classList.add('is-page-transition', 'is-page-arrival');
+    gsap.set(entry, {
+      display: 'grid',
+      autoAlpha: 1,
+      yPercent: 0,
+      clipPath: 'inset(0% 0% 0% 0%)',
+      backgroundColor: '#ff6745',
+      pointerEvents: 'all'
+    });
+    if (isHomePage) settleHeroIntro();
+    else startHeroIntro();
+    entryTimeline = gsap.timeline({ onComplete: releaseEntry, onInterrupt: forceFinishEntry })
+      .to(entry, { yPercent: -100, pointerEvents: 'none', duration: .46, ease: 'power3.inOut' }, .04);
+  };
+
   const navigateWithForge = (href) => {
     if (!entry || !entrySymbol || !hasGSAP || reduceMotion) {
       window.location.href = href;
@@ -1179,16 +1233,31 @@
     try { sessionStorage.setItem('mfInternalNav', '1'); } catch (error) {}
     lockEntryScroll();
     entry.classList.add('is-page-transition', 'is-page-exit');
-    gsap.set(entry, { display: 'grid', autoAlpha: 1, scaleY: 1, clipPath: 'inset(100% 0% 0% 0%)', backgroundColor: '#0d0e0c', pointerEvents: 'all' });
+    gsap.set(entry, { display: 'grid', autoAlpha: 1, yPercent: 0, scaleY: 1, clipPath: 'inset(100% 0% 0% 0%)', backgroundColor: '#0d0e0c', pointerEvents: 'all' });
     gsap.set(entryGrid, { autoAlpha: 0, scale: 1.08 });
     gsap.set(entryStage, { autoAlpha: 1 });
     gsap.set(entrySymbol, { scale: .44, rotation: -45, autoAlpha: 0, x: 0, y: 0, transformOrigin: '50% 50%' });
-    gsap.set(entryPortal, { xPercent: -50, yPercent: -50, x: innerWidth / 2, y: innerHeight / 2, scale: .08, autoAlpha: 0 });
+    const symbolRect = entrySymbol.getBoundingClientRect();
+    const portalX = symbolRect.left + symbolRect.width / 2;
+    const portalY = symbolRect.top + symbolRect.height / 2;
+    entry.style.setProperty('--mf-entry-center-x', `${portalX}px`);
+    entry.style.setProperty('--mf-entry-center-y', `${portalY}px`);
+    gsap.set(entryRings, { x: 0, y: 0, scale: 1, autoAlpha: 1, transformOrigin: '50% 50%' });
+    gsap.set(entryCalibrationRings, { clearProps: 'opacity,visibility' });
+    gsap.set(entryPortal, { xPercent: -50, yPercent: -50, x: portalX, y: portalY, scale: .08, autoAlpha: 0 });
+    const portalDiameter = Math.max(1, entryPortal.offsetWidth || entryPortal.getBoundingClientRect().width || 120);
+    const coverX = Math.max(portalX, document.documentElement.clientWidth - portalX);
+    const coverY = Math.max(portalY, document.documentElement.clientHeight - portalY);
+    const portalCoverScale = Math.hypot(coverX, coverY) * 2 / portalDiameter * 1.06;
     entryTimeline = gsap.timeline({ onComplete: () => { window.location.href = href; } })
-      .to(entry, { clipPath: 'inset(0% 0% 0% 0%)', duration: .54, ease: 'power4.inOut' }, 0)
-      .to(entryGrid, { autoAlpha: .28, scale: 1, duration: .48, ease: 'power2.out' }, .12)
-      .to(entryPortal, { scale: .72, autoAlpha: .9, duration: .42, ease: 'back.out(1.45)' }, .24)
-      .to(entrySymbol, { scale: 1, rotation: 0, autoAlpha: 1, duration: .48, ease: 'power3.out' }, .2);
+      .to(entry, { clipPath: 'inset(0% 0% 0% 0%)', duration: .38, ease: 'power3.inOut' }, 0)
+      .to(entryGrid, { autoAlpha: .28, scale: 1, duration: .32, ease: 'power2.out' }, .06)
+      .to(entrySymbol, { scale: 1.08, rotation: 6, autoAlpha: 1, duration: .34, ease: 'power3.out' }, .12)
+      .to(entrySymbol, { scale: 1, rotation: 0, duration: .16, ease: 'power2.inOut' }, .46)
+      .call(() => entry.classList.add('is-bursting'), null, .52)
+      .set(entryPortal, { autoAlpha: 1 }, .52)
+      .to(entryPortal, { scale: .78, duration: .18, ease: 'back.out(1.6)' }, .52)
+      .to(entryPortal, { scale: portalCoverScale, duration: .62, ease: 'power2.inOut' }, .70);
   };
 
   qsa('a[href]').forEach((link) => {
@@ -1207,6 +1276,7 @@
 
   if (gatePageIntro) {
     if (isHomePage && !entryState.internal) runFullIgnition();
+    else if (entryState.internal) runInternalHandoff();
     else runInternalReveal();
   } else {
     releaseEntry();
