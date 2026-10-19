@@ -516,7 +516,7 @@
       href: 'brain2.html', placeholder: false
     },
     installer: {
-      title: 'Meow Installer',
+      title: 'Meow Launcher',
       status: { zh: '行星 / 开发中', en: 'PLANET / IN DEVELOPMENT' },
       description: { zh: '面向非应用类 Meow 产品的通用本机接入入口。', en: 'A general local access layer for non-app Meow products.' },
       href: 'galaxy-map.html#meow-installer', placeholder: false
@@ -534,7 +534,7 @@
       href: null, placeholder: true
     },
     helper: {
-      title: 'Meow Dev Helper',
+      title: 'Dev Helper',
       status: { zh: '行星候选 / MVP', en: 'PLANET CANDIDATE / MVP' },
       description: { zh: '当前仅展示候选产品位置；详细能力将在产品化整理后补充。', en: 'Only the candidate product position is shown; details will follow productization.' },
       href: null, placeholder: true
@@ -944,6 +944,42 @@
         onEnter: () => gsap.to(brainLinePaths, { autoAlpha: 1, strokeDashoffset: 0, duration: .48, stagger: .07, delay: .58, ease: 'power2.out' })
       });
     }
+  }
+
+  // Galaxy connectors follow the actual card grid instead of legacy fixed coordinates.
+  const galaxyMap = qs('.flat-galaxy-map');
+  const galaxyCore = qs('.flat-galaxy-core', galaxyMap || document);
+  const galaxySvg = qs('.flat-galaxy-lines', galaxyMap || document);
+  const updateGalaxyGeometry = () => {
+    if (!galaxyMap || !galaxyCore || !galaxySvg) return;
+    const mapRect = galaxyMap.getBoundingClientRect();
+    const center = (node) => {
+      const rect = node.getBoundingClientRect();
+      return { x: rect.left - mapRect.left + rect.width / 2,
+        y: rect.top - mapRect.top + rect.height / 2 };
+    };
+    const core = center(galaxyCore);
+    galaxySvg.setAttribute('viewBox', `0 0 ${galaxyMap.clientWidth} ${galaxyMap.clientHeight}`);
+    qsa('[data-galaxy-line]', galaxySvg).forEach((path) => {
+      const node = qs(`.flat-object--${path.dataset.galaxyLine}`, galaxyMap);
+      if (!node) return;
+      const target = center(node);
+      path.setAttribute('d', `M ${core.x} ${core.y} L ${target.x} ${target.y}`);
+    });
+    const brain = qs('.flat-object--brain', galaxyMap);
+    const installer = qs('.flat-object--installer', galaxyMap);
+    const hubLine = qs('[data-galaxy-hub-line]', galaxySvg);
+    if (brain && installer && hubLine) {
+      const a = center(brain), b = center(installer);
+      hubLine.setAttribute('d', `M ${a.x} ${a.y} Q ${(a.x + b.x) / 2} ${Math.min(a.y, b.y) - 70} ${b.x} ${b.y}`);
+    }
+  };
+  if (galaxyMap) {
+    updateGalaxyGeometry();
+    window.addEventListener('load', updateGalaxyGeometry, { once: true });
+    window.addEventListener('resize', updateGalaxyGeometry, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(updateGalaxyGeometry).observe(galaxyMap);
+    document.fonts?.ready.then(updateGalaxyGeometry);
   }
 
   // v0.7 shock ignition rebuild: official mark → energy core → real Forge core.

@@ -7,7 +7,7 @@
 <meta content="Meow Forge 是 shizuku.T 的 AI 产品独立站与产品化入口：独立产品、集成环境和形成中的方向在这里被清晰组织、展示与持续更新。" name="description"/>
 <title>Meow Forge — shizuku.T 的 AI 产品独立站</title>
 <link href="assets/meow-forge-symbol-reference.png" rel="icon" type="image/png"/>
-<link href="styles.css" rel="stylesheet"/>
+<link href="styles.css?v=20261014-layout-3" rel="stylesheet"/>
 <script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
 <script data-mf-entry-boot="">
 (function(){
@@ -61,12 +61,12 @@
 <div class="nav-menu nav-menu--products" role="menu">
 <p data-i18n-en="PLANETS" data-i18n-zh="独立产品">PLANETS / 独立产品</p>
 <a href="brain2.html"><span>●</span><div><strong>Brain2</strong><small>PLANET · PACKAGING</small></div><i>↗</i></a>
-<a href="galaxy-map.html#meow-installer"><span>●</span><div><strong>Meow Installer</strong><small>PLANET · IN DEVELOPMENT</small></div><i>↗</i></a>
+<a href="galaxy-map.html#meow-installer"><span>●</span><div><strong>Meow Launcher</strong><small>PLANET · IN DEVELOPMENT</small></div><i>↗</i></a>
 <p data-i18n-en="ORBITAL HUB" data-i18n-zh="轨道枢纽">ORBITAL HUB / 轨道枢纽</p>
 <a href="meowdesk.html"><span>⌁</span><div><strong>Meowdesk</strong><small>INTEGRATION ENVIRONMENT</small></div><i>↗</i></a>
 <p data-i18n-en="IN FORMATION" data-i18n-zh="形成中">IN FORMATION / 形成中</p>
 <a href="galaxy-map.html#meowviewer"><span>◌</span><div><strong>MeowViewer</strong><small>PLANET CANDIDATE</small></div><i>↗</i></a>
-<a href="galaxy-map.html#dev-helper"><span>◌</span><div><strong>Meow Dev Helper</strong><small>PLANET CANDIDATE · MVP</small></div><i>↗</i></a>
+<a href="galaxy-map.html#dev-helper"><span>◌</span><div><strong>Dev Helper</strong><small>PLANET CANDIDATE · MVP</small></div><i>↗</i></a>
 <a href="galaxy-map.html#meow-protector"><span>◌</span><div><strong>Meow Protector</strong><small>PLANET CANDIDATE</small></div><i>↗</i></a>
 <a aria-disabled="true" href="galaxy-map.html#coming-soon"><span>·</span><div><strong>Coming Soon</strong><small>FUTURE OBJECT</small></div><i>—</i></a></div></div>
 <a data-i18n-en="Build Log" data-i18n-zh="Build Log" href="build-log.html">Build Log</a>
@@ -93,8 +93,6 @@
 <span class="hero-line hero-line--accent">into useful</span>
 <span class="hero-line">AI products.</span>
 </h1>
-<p class="hero-intro lang-zh">Meow Forge 是 shizuku.T 的 AI 产品独立站与产品化入口。这里保留 v0.7 已确认的信息节奏，只用一套克制的平面系统语言，区分独立产品、集成环境与仍在形成中的方向。</p>
-<p aria-hidden="true" class="hero-intro lang-en">Meow Forge is shizuku.T’s independent AI product site and productization gateway, organizing standalone products, integration environments and directions still in formation.</p>
 <div class="hero-actions">
 <a class="button button--ink" href="#products"><span data-i18n-en="Explore products" data-i18n-zh="浏览产品">浏览产品</span><span>↓</span></a>
 </div>
@@ -126,18 +124,18 @@
 <div aria-label="当前项目" class="signal-strip" data-part-divider="1-2">
 <div class="signal-strip__track"><div class="signal-strip__group"><span>PRODUCT GALAXY</span><strong>MEOW FORGE</strong><i></i>
 <span>PLANET</span><strong>BRAIN2</strong><i></i>
-<span>PLANET</span><strong>MEOW INSTALLER</strong><i></i>
+<span>PLANET</span><strong>MEOW LAUNCHER</strong><i></i>
 <span>ORBITAL HUB</span><strong>MEOWDESK</strong><i></i>
 <span>PRODUCT GALAXY</span><strong>MEOW FORGE</strong><i></i>
 <span>PLANET</span><strong>BRAIN2</strong><i></i>
-<span>PLANET</span><strong>MEOW INSTALLER</strong><i></i>
+<span>PLANET</span><strong>MEOW LAUNCHER</strong><i></i>
 <span>ORBITAL HUB</span><strong>MEOWDESK</strong><i></i></div><div aria-hidden="true" class="signal-strip__group"><span>PRODUCT GALAXY</span><strong>MEOW FORGE</strong><i></i>
 <span>PLANET</span><strong>BRAIN2</strong><i></i>
-<span>PLANET</span><strong>MEOW INSTALLER</strong><i></i>
+<span>PLANET</span><strong>MEOW LAUNCHER</strong><i></i>
 <span>ORBITAL HUB</span><strong>MEOWDESK</strong><i></i>
 <span>PRODUCT GALAXY</span><strong>MEOW FORGE</strong><i></i>
 <span>PLANET</span><strong>BRAIN2</strong><i></i>
-<span>PLANET</span><strong>MEOW INSTALLER</strong><i></i>
+<span>PLANET</span><strong>MEOW LAUNCHER</strong><i></i>
 <span>ORBITAL HUB</span><strong>MEOWDESK</strong><i></i></div></div>
 </div>
 <section class="product-catalog dark-section" data-cursor="#ff6745" data-part="2" id="product-index">
@@ -147,7 +145,7 @@
 <i aria-hidden="true" class="catalog-intro__rule"></i></div>
 <button aria-label="跳过产品展示" class="catalog-skip" data-catalog-skip="" type="button"><span data-i18n-en="Skip product showcase" data-i18n-zh="跳过产品展示">跳过产品展示</span><span aria-hidden="true">↓</span></button>
 <div class="catalog-stage catalog-stage--portfolio" data-catalog-stage="">
-<div class="catalog-list-viewport" data-catalog-list-viewport=""><div aria-label="产品目录" class="catalog-list" role="list"><button class="catalog-item is-active" data-catalog-item="brain2" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET · PACKAGING" data-i18n-zh="行星 · 产品化包装中">行星 · 产品化包装中</span><strong>Brain2</strong><small data-i18n-en="Standalone Governance System" data-i18n-zh="独立治理系统">独立治理系统</small><i aria-hidden="true">↗</i></button><button class="catalog-item" data-catalog-item="installer" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET · IN DEVELOPMENT" data-i18n-zh="行星 · 开发中">行星 · 开发中</span><strong>Meow Installer</strong><small data-i18n-en="Access Infrastructure" data-i18n-zh="接入基础设施">接入基础设施</small><i aria-hidden="true">↗</i></button><button class="catalog-item" data-catalog-item="meowdesk" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="ORBITAL HUB · IN DEVELOPMENT" data-i18n-zh="轨道枢纽 · 开发中">轨道枢纽 · 开发中</span><strong>Meowdesk</strong><small data-i18n-en="Integration Environment" data-i18n-zh="集成环境">集成环境</small><i aria-hidden="true">↗</i></button><button class="catalog-item catalog-item--future" data-catalog-item="viewer" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE" data-i18n-zh="行星候选">行星候选</span><strong>MeowViewer</strong><small data-i18n-en="Viewer · In formation" data-i18n-zh="可视化产品 · 形成中">可视化产品 · 形成中</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future" data-catalog-item="helper" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE · MVP" data-i18n-zh="行星候选 · MVP">行星候选 · MVP</span><strong>Meow Dev Helper</strong><small data-i18n-en="Development Tool" data-i18n-zh="开发辅助工具">开发辅助工具</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future" data-catalog-item="protector" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE" data-i18n-zh="行星候选">行星候选</span><strong>Meow Protector</strong><small data-i18n-en="Protection Layer · In formation" data-i18n-zh="保护层 · 形成中">保护层 · 形成中</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future catalog-item--coming" data-catalog-item="coming" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="FUTURE OBJECT" data-i18n-zh="未来对象">未来对象</span><strong>Coming Soon</strong><small data-i18n-en="Next product signal" data-i18n-zh="下一条产品信号">下一条产品信号</small><i aria-hidden="true">···</i></button></div></div>
+<div class="catalog-list-viewport" data-catalog-list-viewport=""><div aria-label="产品目录" class="catalog-list" role="list"><button class="catalog-item is-active" data-catalog-item="brain2" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET · PACKAGING" data-i18n-zh="行星 · 产品化包装中">行星 · 产品化包装中</span><strong>Brain2</strong><small data-i18n-en="Standalone Governance System" data-i18n-zh="独立治理系统">独立治理系统</small><i aria-hidden="true">↗</i></button><button class="catalog-item" data-catalog-item="installer" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET · IN DEVELOPMENT" data-i18n-zh="行星 · 开发中">行星 · 开发中</span><strong>Meow Launcher</strong><small data-i18n-en="Access Infrastructure" data-i18n-zh="接入基础设施">接入基础设施</small><i aria-hidden="true">↗</i></button><button class="catalog-item" data-catalog-item="meowdesk" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="ORBITAL HUB · IN DEVELOPMENT" data-i18n-zh="轨道枢纽 · 开发中">轨道枢纽 · 开发中</span><strong>Meowdesk</strong><small data-i18n-en="Integration Environment" data-i18n-zh="集成环境">集成环境</small><i aria-hidden="true">↗</i></button><button class="catalog-item catalog-item--future" data-catalog-item="viewer" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE" data-i18n-zh="行星候选">行星候选</span><strong>MeowViewer</strong><small data-i18n-en="Viewer · In formation" data-i18n-zh="可视化产品 · 形成中">可视化产品 · 形成中</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future" data-catalog-item="helper" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE · MVP" data-i18n-zh="行星候选 · MVP">行星候选 · MVP</span><strong>Dev Helper</strong><small data-i18n-en="Development Tool" data-i18n-zh="开发辅助工具">开发辅助工具</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future" data-catalog-item="protector" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="PLANET CANDIDATE" data-i18n-zh="行星候选">行星候选</span><strong>Meow Protector</strong><small data-i18n-en="Protection Layer · In formation" data-i18n-zh="保护层 · 形成中">保护层 · 形成中</small><i aria-hidden="true">＋</i></button><button class="catalog-item catalog-item--future catalog-item--coming" data-catalog-item="coming" role="listitem" type="button"><span class="catalog-item__status" data-i18n-en="FUTURE OBJECT" data-i18n-zh="未来对象">未来对象</span><strong>Coming Soon</strong><small data-i18n-en="Next product signal" data-i18n-zh="下一条产品信号">下一条产品信号</small><i aria-hidden="true">···</i></button></div></div>
 <a aria-label="查看 Brain2 产品详情" class="catalog-preview catalog-preview--editorial" data-catalog-link="" data-catalog-preview="" href="brain2.html">
 <div class="catalog-preview__top"><span class="catalog-preview__year">2026</span><span data-i18n-en="LIVE PREVIEW" data-i18n-zh="实时预览">实时预览</span><strong data-catalog-title="">Brain2</strong><em class="catalog-preview__counter" data-catalog-counter="">01 / 07</em></div>
 <div class="catalog-preview__viewport">
@@ -223,9 +221,9 @@
 <div class="section-shell product-showcase-shell">
 <div class="product-index product-classification"><span>MEOW FORGE GALAXY</span><span>PLANET / ACCESS INFRASTRUCTURE</span><span>STATUS / IN DEVELOPMENT</span></div>
 <div class="installer-layout">
-<div><h2>Meow<br/>Installer</h2></div>
+<div><h2>Meow<br/>Launcher</h2></div>
 <div class="installer-copy"><p class="product-lede" data-i18n-en="A general local access layer for non-app Meow products." data-i18n-zh="非应用类 Meow 产品的通用本机接入入口。">非应用类 Meow 产品的通用本机接入入口。</p><p class="body-copy" data-i18n-en="It is neither a temporary Brain2 installer nor a Meowdesk subpage. It reliably hands skills, adapters, knowledge systems, templates and toolkits to a user’s local agent for installation and acceptance." data-i18n-zh="它不是 Brain2 的临时安装脚本，也不是 Meowdesk 的附属页面。它负责把 Skill、Adapter、知识系统、模板和工具包可靠地交给用户本机 Agent 执行接入与验收。">它不是 Brain2 的临时安装脚本，也不是 Meowdesk 的附属页面。它负责把 Skill、Adapter、知识系统、模板和工具包可靠地交给用户本机 Agent 执行接入与验收。</p><a class="text-link text-link--ink" data-i18n-en="See its place in the product system ↗" data-i18n-zh="查看它在产品系统中的位置 ↗" href="galaxy-map.html#meow-installer">查看它在产品系统中的位置 ↗</a><span class="truth-note" data-i18n-en="DIRECTION CONFIRMED · LOCAL FEASIBILITY REQUIRES CODEX" data-i18n-zh="方向已确认 · 仍需 Codex 本地可行性核验">方向已确认 · 仍需 Codex 本地可行性核验</span></div>
-<div aria-label="Meow Installer 接入链" class="flat-installer-diagram"><span>PRODUCT DECLARATION</span><i></i><span>AGENT SELECTION</span><i></i><span>INSTALL PROMPT</span><i></i><span>LOCAL ACCEPTANCE</span></div>
+<div aria-label="Meow Launcher 接入链" class="flat-installer-diagram"><span>PRODUCT DECLARATION</span><i></i><span>AGENT SELECTION</span><i></i><span>INSTALL PROMPT</span><i></i><span>LOCAL ACCEPTANCE</span></div>
 </div>
 </div>
 </section>
@@ -287,6 +285,6 @@
 <div aria-live="polite" class="toast" data-toast="" role="status"></div>
 <script src="assets/vendor/gsap.min.js"></script>
 <script src="assets/vendor/ScrollTrigger.min.js"></script>
-<script src="script.js"></script>
+<script src="script.js?v=20261014-layout-3"></script>
 </body>
 </html>
